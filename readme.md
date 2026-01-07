@@ -1,4 +1,4 @@
-# Bot Dólar Hoy
+# Bot Monitor_BCV
 
 Este repositorio contiene un bot de Telegram para consultar la tasa oficial del dólar publicada por el Banco Central de Venezuela (BCV) y realizar conversiones entre USD y Bs. También envía un reporte diario automático.
 
