@@ -9,13 +9,13 @@ class Info{
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
             },
-            httpsAgent: new https.Agent({  
-                rejectUnauthorized: false // WARNING: This disables SSL certificate verification.
-                                          // It's used here because the BCV website's certificate chain
-                                          // is often incomplete, causing 'unable to verify the first certificate' errors.
-                                          // This exposes the bot to potential Man-in-the-Middle attacks.
-                                          // A more secure solution would be to properly configure trusted CAs
-                                          // or obtain the missing intermediate certificates.
+  httpsAgent: new https.Agent({  
+                rejectUnauthorized: false // ADVERTENCIA: Esto desactiva la verificación del certificado SSL.
+                                          // Se utiliza aquí porque la cadena de certificados del sitio web del BCV
+                                          // suele estar incompleta, causando errores de 'unable to verify the first certificate'.
+                                          // Esto expone al bot a posibles ataques de 'Man-in-the-Middle' (intermediario).
+                                          // Una solución más segura sería configurar correctamente las CA de confianza
+                                          // u obtener los certificados intermedios faltantes.
             })
         });
 

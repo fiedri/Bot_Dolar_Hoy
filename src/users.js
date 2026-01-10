@@ -8,7 +8,7 @@ export const connectDB = async () => {
         console.log('Conectado a mongo');
     } catch (err) {
         console.error('Error al conectar a mongo', err);
-        throw err; // Re-throw the error to be handled by the application's entry point
+        throw err; 
     }
 };
 

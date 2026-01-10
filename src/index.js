@@ -30,13 +30,13 @@ const startBot = async () => {
     console.log("Bot encendido y esperando mensajes...");
   } catch (e) {
     console.error("Error initializing Telegram Bot:", e.message);
-    process.exit(1); // Terminate the process if the bot can't start
+    process.exit(1);
   }
 
-  // CRON Job and Bot listeners are defined only after successful startup
+ 
   cron.schedule('0 12 * * *', async () => {
       const tasa = await info.getDollarPrice();
-      const users = await userService.getAllUsers(); // Traes todos los usuarios de MongoDB
+      const users = await userService.getAllUsers();
   
       for (const user of users) {
           try {
@@ -81,7 +81,7 @@ Desarrollado por <a href="https://t.me/fiedri">Fiedri</a>.`, opts
     );
   });
   
-  // comando help
+  
   bot.onText(/\/help/, (msg) => {
     bot.sendMessage(
       msg.chat.id, `
@@ -107,7 +107,7 @@ Seleccione un método de cálculo ➔ Ingrese el valor numérico ➔ Reciba el r
   
   bot.on('message', async (msg) => {
     try {
-      // Find the user or create them if they don't exist.
+    
       await userService.findOrCreateUser(msg.chat.id, msg.chat.username || 'NoUsername');
     
       if (userState[msg.chat.id] && userState[msg.chat.id].state === 'awaiting_amount') {
