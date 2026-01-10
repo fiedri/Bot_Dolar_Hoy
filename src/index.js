@@ -68,16 +68,17 @@ const startBot = async () => {
     };
     bot.sendMessage(
       msg.chat.id,
-      `
-<b>SISTEMA DE CONSULTA CAMBIARIA</b>
-<b>Funciones:</b>
-• Consulta directa: BCV.
-• Conversión bidireccional: (USD/BS).
-• Interfaz: Teclado optimizado.
+     `<b>📊 SISTEMA DE CONSULTA CAMBIARIA</b>
 
-<i>Seleccione una operación para comenzar.</i>
+<b>Capacidades:</b>
+• <b>Tasa Oficial:</b> Datos directos del BCV.
+• <b>Conversión:</b> Cálculo inmediato (USD/VES).
+• <b>Reporte Diario:</b> Recibe la tasa cada mañana automáticamente.
 
-Desarrollado por <a href="https://t.me/fiedri">Fiedri</a>.`, opts
+<i>Seleccione una operación en el menú inferior.</i>
+
+---
+<a href="https://t.me/fiedri">Desarrollado por Fiedri</a>`, opts
     );
   });
   
