@@ -10,7 +10,12 @@ class Info{
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
             },
             httpsAgent: new https.Agent({  
-                rejectUnauthorized: false
+                rejectUnauthorized: false // WARNING: This disables SSL certificate verification.
+                                          // It's used here because the BCV website's certificate chain
+                                          // is often incomplete, causing 'unable to verify the first certificate' errors.
+                                          // This exposes the bot to potential Man-in-the-Middle attacks.
+                                          // A more secure solution would be to properly configure trusted CAs
+                                          // or obtain the missing intermediate certificates.
             })
         });
 
@@ -20,7 +25,13 @@ class Info{
 
         tasa = tasa.replace(',', '.');
 
-        return parseFloat(tasa).toFixed(2);
+        const parsedTasa = parseFloat(tasa);
+
+        if (isNaN(parsedTasa)) {
+            throw new Error("No se pudo obtener un valor numérico para la tasa del BCV. El sitio puede haber cambiado.");
+        }
+
+        return parsedTasa.toFixed(2);
     } catch (error) {
         console.error("Error al obtener la tasa del BCV:", error.message);
         return null;
