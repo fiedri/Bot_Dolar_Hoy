@@ -14,6 +14,12 @@ let options = {
   },
   "🇻🇪 (BS -> USD)": {
     reply: "Ingrese monto en BS:"
+  },
+  "💶 (EUR -> BS)":{
+    reply: "Ingrese monto en EUR:"
+  },
+  "(BS -> EUR)":{
+    reply: "Ingrese monto en BS:"
   }
 };
 let bot;
@@ -36,11 +42,12 @@ const startBot = async () => {
  
   cron.schedule('0 12 * * *', async () => {
       const tasa = await info.getDollarPrice();
+      const tasaEuro = await info.getEuroPrice();
       const users = await userService.getAllUsers();
   
       for (const user of users) {
           try {
-              await bot.sendMessage(user.chatId, `📊 <b>REPORTE DIARIO</b>\nTasa BCV: <code>${tasa}</code> Bs.`, { parse_mode: 'HTML' });
+              await bot.sendMessage(user.chatId, `📊 <b>REPORTE DIARIO</b>\nDolar: <code>${tasa}</code> Bs.\nEuro: <code>${tasaEuro}</code> Bs.`, { parse_mode: 'HTML' });
           } catch (error) {
              
               if (error.response && error.response.statusCode === 403) {
@@ -58,8 +65,9 @@ const startBot = async () => {
       parse_mode: 'HTML',
       reply_markup: {
         keyboard: [
-          [{ text: "📊 VER TASA BCV" }],
+          [{ text: "📊 VER TASAS DEL BCV" }],
           [{ text: "💵 (USD -> BS)" }, { text: "🇻🇪 (BS -> USD)" }],
+          [{ text: "💶 (EUR -> BS)"}, {text: "(BS -> EUR)"}],
           [{ text: "ℹ️ /help" }]
         ],
         resize_keyboard: true,
@@ -72,7 +80,7 @@ const startBot = async () => {
 
 <b>Capacidades:</b>
 • <b>Tasa Oficial:</b> Datos directos del BCV.
-• <b>Conversión:</b> Cálculo inmediato (USD/VES).
+• <b>Conversión:</b> Cálculo inmediato (USD/VES y EUR/VES).
 • <b>Reporte Diario:</b> Recibe la tasa cada mañana automáticamente.
 
 <i>Seleccione una operación en el menú inferior.</i>
@@ -96,6 +104,8 @@ const startBot = async () => {
 1. <b>Ver tasa BCV:</b> Obtiene en tiempo real la tasa oficial publicada por el Banco Central de Venezuela.
 2. <b>Calculadora USD ➔ BS:</b> Inyecta un monto en dolares para obtener su equivalente en moneda local según tasa actual.
 3. <b>Calculadora BS ➔ USD:</b> Procesa montos en bolívares para determinar su valor en dolares.
+4. <b>Calculadora EUR ➔ BS:</b> Inyecta un monto en euros para obtener su equivalente en moneda local según tasa actual.
+5. <b>Calculadora BS ➔ EUR:</b> Procesa montos en bolívares para determinar su valor en euros.
 
 <b>FLUJO DE TRABAJO:</b>
 Seleccione un método de cálculo ➔ Ingrese el valor numérico ➔ Reciba el resultado.
@@ -120,14 +130,22 @@ Seleccione un método de cálculo ➔ Ingrese el valor numérico ➔ Reciba el r
     
         try {
           let conversion;
-    
+          let moneda
           if (userState[msg.chat.id].method === "💵 (USD -> BS)") {
             conversion = await info.calculateConversion(amount);
-          } else {
+            moneda = "Bs"
+          } else if (userState[msg.chat.id].method === "🇻🇪 (BS -> USD)") {
             conversion = await info.calculateReverseConversion(amount);
+            moneda = "USD"
+          } else if (userState[msg.chat.id].method === "💶 (EUR -> BS)") {
+            conversion = await info.calculateEuroConversion(amount);
+            moneda = "Bs"
+          } else if (userState[msg.chat.id].method === "(BS -> EUR)") {
+            conversion = await info.calculateEuroReverseConversion(amount);
+            moneda = "EUR"
           }
-    
-          bot.sendMessage(msg.chat.id, `El resultado de la conversión es: <code>${conversion}</code> ${userState[msg.chat.id].method === "💵 (USD -> BS)" ? "Bs" : "USD"}`, { parse_mode: 'HTML' });
+
+          bot.sendMessage(msg.chat.id, `El resultado de la conversión es: <code>${conversion}</code> ${moneda}`, { parse_mode: 'HTML' });
         } catch (e) {
           bot.sendMessage(msg.chat.id, `Error: ${e.message}`);
         }
@@ -136,17 +154,21 @@ Seleccione un método de cálculo ➔ Ingrese el valor numérico ➔ Reciba el r
         return;
       }
     
-      if (msg.text === "📊 VER TASA BCV") {
-        bot.sendMessage(msg.chat.id, "Obteniendo la tasa del BCV...");
+      if (msg.text === "📊 VER TASAS DEL BCV") {
+        bot.sendMessage(msg.chat.id, "Obteniendo informacion del BCV...");
         bot.sendChatAction(msg.chat.id, 'typing');
         const tasa = await info.getDollarPrice();
+        const tasaEuro = await info.getEuroPrice();
         await bot.deleteMessage(msg.chat.id, msg.message_id + 1);
-        bot.sendMessage(msg.chat.id, `La tasa oficial del BCV es: <code>${tasa}</code> Bs`, { parse_mode: 'HTML' });
+        bot.sendMessage(msg.chat.id, 
+          `<b>Tasas oficiales del BCV</b>
+📈 Dólar: <code>${tasa}</code> Bs
+📈 Euro: <code>${tasaEuro}</code> Bs`, { parse_mode: 'HTML' });
     
         return;
       }
-    
-      if (msg.text === "💵 (USD -> BS)" || msg.text === "🇻🇪 (BS -> USD)") {
+
+      if (msg.text === "💵 (USD -> BS)" || msg.text === "🇻🇪 (BS -> USD)" || msg.text === "💶 (EUR -> BS)" || msg.text === "(BS -> EUR)") {
         const opt = {
           reply_markup: {
             inline_keyboard: [
