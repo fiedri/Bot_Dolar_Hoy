@@ -45,14 +45,6 @@ Ejecución
 node src/index.js
 ```
 
-Uso en Telegram
-- `/start`: muestra el teclado principal y las opciones.
-- `/help`: despliega el manual con comandos y flujo de uso.
-- Botones del teclado:
-  - `📊 VER TASA BCV`: obtiene la tasa oficial y la muestra.
-  - `💵 (USD -> BS)`: inicia flujo para convertir USD a Bs. El bot pedirá un monto y devolverá el resultado.
-  - `🇻🇪 (BS -> USD)`: inicia flujo para convertir Bs a USD.
-- Dentro de los flujos de conversión, se puede cancelar la operación con el botón `Cancelar`.
 
 Detalles técnicos
 - La tasa se obtiene mediante scraping de la página del BCV con `axios` y `cheerio` en `src/getInfo.js`. Se ha mejorado la validación para asegurar que el valor obtenido sea numérico.
