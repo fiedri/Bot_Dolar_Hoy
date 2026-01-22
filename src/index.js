@@ -160,8 +160,23 @@ Seleccione un método de cálculo ➔ Ingrese el valor numérico ➔ Reciba el r
         const tasa = await info.getDollarPrice();
         const tasaEuro = await info.getEuroPrice();
         await bot.deleteMessage(msg.chat.id, sentMessage.message_id);
+
+        const horaCaracas = new Date().toLocaleString('es-VE', { 
+          timeZone: 'America/Caracas',
+          dateStyle: 'medium',
+          timeStyle: 'short' 
+        });
+
+        const horaServidor = new Date().toLocaleString('es-VE', { 
+          dateStyle: 'medium',
+          timeStyle: 'short' 
+        });
+
         bot.sendMessage(msg.chat.id, 
           `<b>Tasas oficiales del BCV</b>
+📅 <i>${horaCaracas} (Hora de Caracas)</i>
+🖥️ <i>${horaServidor} (Hora Servidor)</i>
+
 📈 Dólar: <code>${tasa}</code> Bs
 📈 Euro: <code>${tasaEuro}</code> Bs`, { parse_mode: 'HTML' });
     
