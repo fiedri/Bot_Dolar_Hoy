@@ -3,14 +3,27 @@ import * as cheerio from "cheerio";
 import https from "https";
 
 class Info {
-    constructor(data) {
-        this.data = data;
-        this.page = cheerio.load(data);
+    async fetchPage() {
+        try {
+            const { data } = await axios.get('https://www.bcv.org.ve/', {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
+                },
+                httpsAgent: new https.Agent({
+                    rejectUnauthorized: false
+                })
+            });
+            return cheerio.load(data);
+        } catch (error) {
+            console.error("Error al descargar la página del BCV:", error.message);
+            throw error;
+        }
     }
+
     async getDollarPrice() {
         try {
-
-            let tasa = this.page('#dolar strong').text().trim();
+            const $ = await this.fetchPage();
+            let tasa = $('#dolar strong').text().trim();
 
             tasa = tasa.replace(',', '.');
 
@@ -29,7 +42,8 @@ class Info {
 
     async getEuroPrice() {
         try {
-            let tasa = this.page('#euro strong').text().trim();
+            const $ = await this.fetchPage();
+            let tasa = $('#euro strong').text().trim();
             tasa = tasa.replace(',', '.');
 
             const parsedTasa = parseFloat(tasa);
@@ -75,19 +89,5 @@ class Info {
     }
 }
 
-const { data } = await axios.get('https://www.bcv.org.ve/', {
-    headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
-    },
-    httpsAgent: new https.Agent({
-        rejectUnauthorized: false // ADVERTENCIA: Esto desactiva la verificación del certificado SSL.
-        // Se utiliza aquí porque la cadena de certificados del sitio web del BCV
-        // suele estar incompleta, causando errores de 'unable to verify the first certificate'.
-        // Esto expone al bot a posibles ataques de 'Man-in-the-Middle' (intermediario).
-        // Una solución más segura sería configurar correctamente las CA de confianza
-        // u obtener los certificados intermedios faltantes.
-    })
-});
-
-const info = new Info(data);
+const info = new Info();
 export default info;

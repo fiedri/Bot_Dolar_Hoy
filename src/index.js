@@ -155,11 +155,11 @@ Seleccione un método de cálculo ➔ Ingrese el valor numérico ➔ Reciba el r
       }
     
       if (msg.text === "📊 VER TASAS DEL BCV") {
-        bot.sendMessage(msg.chat.id, "Obteniendo informacion del BCV...");
+        const sentMessage = await bot.sendMessage(msg.chat.id, "Obteniendo informacion del BCV...");
         bot.sendChatAction(msg.chat.id, 'typing');
         const tasa = await info.getDollarPrice();
         const tasaEuro = await info.getEuroPrice();
-        await bot.deleteMessage(msg.chat.id, msg.message_id + 1);
+        await bot.deleteMessage(msg.chat.id, sentMessage.message_id);
         bot.sendMessage(msg.chat.id, 
           `<b>Tasas oficiales del BCV</b>
 📈 Dólar: <code>${tasa}</code> Bs
