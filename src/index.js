@@ -4,7 +4,15 @@ import info from "./getInfo.js";
 import cron from "node-cron";
 import userService from "./utils.js";
 import { connectDB } from "./users.js";
+import express from 'express';
+const app = express();
 
+app.get('/', (req, res) => res.send('Bot de Fiedri en línea 🚀'));
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Puerto abierto: ${port}`);
+});
 
 const botToken = process.env.BOT_TOKEN;
 const userState = {};
